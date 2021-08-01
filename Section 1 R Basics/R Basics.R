@@ -18,3 +18,4 @@ a
 #print all variables in work space
 ls()
 
+-b + (sqrt(b^2 - 4*a*c)) / (2*a)
