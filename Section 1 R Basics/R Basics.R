@@ -7,12 +7,14 @@ library(dslabs)
 #check all installed packages.
 installed.packages()
 
-install.packages("tidyverse")
+#defining variables
+a <- 1
+b <- 2
+c <- -1
 
-library(dslabs)
-library(tidyverse)
-library(ggplot2)
-data(murders)
-murders %>%
-  ggplot(aes(population, total, label = abb, color = region))+
-  geom_label()
+#print a
+a
+
+#print all variables in work space
+ls()
+
