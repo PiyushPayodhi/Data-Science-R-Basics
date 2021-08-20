@@ -2,12 +2,16 @@
 library(httr)
 library(RCurl)
 library(rvest)
-N=58005
+N=58010
 url = "https://bhoomirashi.gov.in/prep1.asp?nid=1&project_id="
+csvPath = "C:\\Users\\Pyuish\\OneDrive\\To Print\\Map\\Road Projects\\"
 
 project_df <- data.frame(ProjectName="NA",ProjectNumber="NA" ,LandRequired="NA" ,LandAvailable="NA" ,LandToBeAcquired="NA" ,LandAcquiredTillNow="NA" ,SanctionNumber="NA" ,SanctionDate="NA" ,SanctionAmount="NA")
+project_3a_df <- data.frame(PublishDate="",NotificationNumber="",NotificationFile="",Village="",Staus="",ProjectNumber="")
+project_3A_df <- data.frame(PublishDate="",NotificationNumber="",NotificationFile="",SurveyNumber="",Staus="",ProjectNumber="")
+project_3D_df <- data.frame(PublishDate="",NotificationNumber="",NotificationFile="",SurveyNumber="",Staus="",ProjectNumber="")
 
-for (i in 58000:58005){
+for (i in 58000:N){
 
   actualURL = gsub(" ","",paste(url,i))
   
@@ -79,38 +83,39 @@ for (i in 58000:58005){
     html_tables_frame_4$ProjectNumber <- ProjectNumber
     html_tables_frame_4 <- html_tables_frame_4[-c(6:10)]
     html_tables_frame_4 <- html_tables_frame_4[-c(1:2),]
-    publish_date = html_tables_frame_4[1,]
-    notification_number = html_tables_frame_4[2,]
-    notification_file = html_tables_frame_4[3,]
+    colnames(html_tables_frame_4) <- c("PublishDate","NotificationNumber","NotificationFile","Village","Staus","ProjectNumber")
     
     ##3A details 
     html_tables_frame_5$ProjectNumber <- ProjectNumber
     html_tables_frame_5 <- html_tables_frame_5[-c(6:10)]
     html_tables_frame_5 <- html_tables_frame_5[-c(1:2),]
-    publish_date = html_tables_frame_5[,1]
-    notification_number = html_tables_frame_5[,2]
-    notification_file = html_tables_frame_5[,3]
-    
+    colnames(html_tables_frame_5) <- c("PublishDate","NotificationNumber","NotificationFile","SurveyNumber","Staus","ProjectNumber")
     
     ##3D details 
     html_tables_frame_6$ProjectNumber <- ProjectNumber
     html_tables_frame_6 <- html_tables_frame_6[-c(6:10)]
     html_tables_frame_6 <- html_tables_frame_6[-c(1:2),]
-    publish_date = html_tables_frame_6[,1]
-    notification_number = html_tables_frame_6[,2]
-    notification_file = html_tables_frame_6[,3]
+    colnames(html_tables_frame_6) <- c("PublishDate","NotificationNumber","NotificationFile","SurveyNumber","Staus","ProjectNumber")
     
     project_details_row <- c(project_name, ProjectNumber, land_required, land_available, land_to_be_acquired, land_acquired,sanction_number, sanction_date, sanction_amount)
     project_df <- rbind(project_df,project_details_row)
+    project_3a_df <- rbind(project_3a_df,html_tables_frame_4)
+    project_3A_df <- rbind(project_3A_df,html_tables_frame_5)
+    project_3D_df <- rbind(project_3D_df,html_tables_frame_6)
     
-    mergecols <- c("ProjectNumber")
-    R3a <- merge(project_df, html_tables_frame_4, by = mergecols, all.x = TRUE)
-    R3A <- merge(project_df, html_tables_frame_5, by = mergecols, all.x = TRUE)
-    R3D <- merge(project_df, html_tables_frame_6, by = mergecols, all.x = TRUE)
-    RAll <- left  <- merge(project_df, 
-                           merge(html_tables_frame_4,
-                                 merge(html_tables_frame_5, html_tables_frame_6, by = mergecols, all.x = TRUE),
-                                 by = mergecols, all.x = TRUE),by = mergecols, all.x = TRUE)
+    write.csv(project_df,paste(csvPath,"ProjectDetails.csv"), row.names = FALSE)
+    write.csv(project_3a_df,paste(csvPath,"Project3aDetails.csv"), row.names = FALSE)
+    write.csv(project_3A_df,paste(csvPath,"Project3ADetails.csv"), row.names = FALSE)
+    write.csv(project_3D_df,paste(csvPath,"Project3DDetails.csv"), row.names = FALSE)
     
+    #mergecols <- c("ProjectNumber")
+    # RAll <- left  <- merge(project_df,
+    #                        merge(html_tables_frame_4,
+    #                              merge(html_tables_frame_5, html_tables_frame_6, by = mergecols, all.x = TRUE),
+    #                              by = mergecols, all.x = TRUE),by = mergecols, all.x = TRUE)
+
   }
+  rm("html_tables_data_1", "html_tables_data_2","html_tables_data_3","html_tables_data_4","html_tables_data_5","html_tables_data_6")
+  rm("html_tables_frame_1", "html_tables_frame_2","html_tables_frame_3","html_tables_frame_4","html_tables_frame_5","html_tables_frame_6")
+  #rm("webpage","actualURL","land_acquired","land_available","land_required","land_to_be_acquired","N","p","project_details_row","project_name","ProjectNumber","sanction_amount","sanction_date","sanction_number","url","csvPath")
 }
